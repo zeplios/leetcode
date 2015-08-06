@@ -6,47 +6,41 @@
  *     struct TreeNode *right;
  * };
  */
-/**
- * Return an array of size *returnSize.
- * Note: The returned array must be malloced, assume caller calls free().
- */
-int* rightSideView(struct TreeNode* root, int* returnSize) {
-    int * res = malloc(1000*sizeof(int));
-    (* returnSize) = 0;
+int maxPathSum(struct TreeNode* root) {
+    struct TreeNode* stack[10000];
+    int num[10000];
+    int top = 0, max = INT_MIN;
     
-    int QUEUE_MAX = 10000;
-    struct TreeLinkNode* queue[QUEUE_MAX];
-    struct TreeLinkNode* preNode = NULL, *n;
-    int first = 0, last = 0;
-    if (root) {
-        queue[first++] = root;
-        queue[first++] = NULL;
-    } else {
-        return res;
-    }
-    
-    while (first != last) {
-        preNode = n;
-        n = queue[last++];
-        last = (last >= QUEUE_MAX) ? 0 : last;
+    struct TreeNode* cur = root;
+    struct TreeNode* prePop = NULL;
+    while (cur || top > 0) {
+        while (cur) {
+            num[top] = 0;
+            stack[top++] = cur;
+            cur = cur->left;
+        }
         
-        if (n == NULL) {
-            if (last != first) {
-                queue[first++] = NULL;
-                first = (first >= QUEUE_MAX) ? 0 : first;
+        cur = stack[top-1];
+        if (cur->right != NULL && cur->right != prePop) {
+            cur = cur->right;
+        } else {
+            max = cur->val > max ? cur->val : max;
+            if (top > 1 && cur == stack[top-2]->right) {
+                int rightmax = num[top-1] + cur->val;
+                rightmax = rightmax > 0 ? rightmax : 0;
+                int curmax = num[top-2] + stack[top-2]->val + rightmax;
+                num[top-2] = num[top-2] > rightmax ? num[top-2] : rightmax;
+                max = curmax > max ? curmax : max;
+            } else if (top > 1) {
+                num[top-2] = num[top-1] + stack[top-1]->val;
+                num[top-2] = num[top-2] > 0 ? num[top-2] : 0;
+                int curmax = num[top-2] + stack[top-2]->val;
+                max = curmax > max ? curmax : max;
             }
-            res[(* returnSize)++] = preNode->val;
-            continue;
-        }
-        
-        if (n->left != NULL) {
-            queue[first++] = n->left;
-            first = (first >= QUEUE_MAX) ? 0 : first;
-        }
-        if (n->right != NULL) {
-            queue[first++] = n->right;
-            first = (first >= QUEUE_MAX) ? 0 : first;
+            prePop = cur;
+            top--;
+            cur = NULL;
         }
     }
-    return res;
+    return max;
 }
