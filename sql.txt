@@ -1,0 +1,65 @@
+181
+# Write your MySQL query statement below
+SELECT s.Name FROM Employee s inner join Employee t on s.ManagerId=t.Id WHERE s.Salary > t.Salary
+
+182
+# Write your MySQL query statement below
+SELECT Email FROM (SELECT Email, count(*) AS num FROM Person GROUP BY Email) as t WHERE num > 1
+
+175
+# Write your MySQL query statement below
+SELECT FirstName, LastName, City, State From Person LEFT OUTER JOIN Address ON Person.PersonId=Address.PersonId
+
+176
+# Write your MySQL query statement below
+SELECT 
+(CASE WHEN count(*) > 0 THEN Salary
+ELSE NULL END) AS SecondHighestSalary
+FROM (SELECT Salary From Employee WHERE Salary != (SELECT MAX(Salary) FROM Employee) ORDER BY Salary DESC limit 1) as t
+
+178
+# Write your MySQL query statement below
+SELECT Scores.Score, t.Rank
+FROM Scores inner join
+(SELECT Score, (@rownum:=@rownum+1) as RANK FROM (SELECT DISTINCT Score FROM Scores ORDER BY Score DESC) as s, (SELECT @rownum:=0) AS r) AS t
+ON Scores.Score=t.Score
+ORDER BY Scores.Score DESC
+/******
+SELECT Scores.Score, COUNT(Ranking.Score) AS RANK
+  FROM Scores
+     , (
+       SELECT DISTINCT Score
+         FROM Scores
+       ) Ranking
+ WHERE Scores.Score <= Ranking.Score
+ GROUP BY Scores.Id, Scores.Score
+ ORDER BY Scores.Score DESC;
+*****/
+
+184
+# Write your MySQL query statement below
+SELECT DISTINCT Num AS ConsecutiveNums FROM
+    (SELECT Num, 
+    (CASE
+        WHEN @pre=Num THEN @count:=@count+1
+        WHEN (@pre:=Num) is not null THEN @count:=1 END) AS con
+    FROM Logs, (SELECT @pre:=NULL) p
+    ORDER BY Id) AS t
+WHERE con >= 3
+
+196
+# Write your MySQL query statement below
+DELETE FROM Person WHERE Id NOT IN (SELECT Id FROM (SELECT min(Id) AS Id FROM Person GROUP BY Email) AS T1);
+
+
+197
+# Write your MySQL query statement below
+SELECT Id FROM
+(SELECT Id, (CASE WHEN @preTe<Temperature AND TO_DAYS(Date)-TO_DAYS(@preDate)=1 THEN NULL ELSE '1' END) AS high, (@preDate:=Date), (@preTe:=Temperature) FROM
+((SELECT * FROM Weather w ORDER BY Date) as T1, (SELECT @preTe:=NULL, @preDate:=NULL) as T2)) AS T3
+WHERE high IS NULL;
+
+184
+# Write your MySQL query statement below
+SELECT d.Name, e.Name, e.Salary FROM Employee e INNER JOIN Department d ON e.DepartmentId=d.Id, (SELECT DepartmentId, max(Salary) AS S FROM Employee GROUP BY DepartmentId) AS T
+WHERE Salary = T.S AND d.Id=T.DepartmentId
