@@ -4,52 +4,36 @@
  */
 /* !!! I think the code is right, but leetcode throws a compile error even I just declear(malloc) the result and return it */
 int* findOrder(int numCourses, int** prerequisites, int prerequisitesRowSize, int prerequisitesColSize, int* returnSize) {
-    int *tree = malloc(sizeof(int)*numCourses);
-    int *outTree = malloc(sizeof(int)*numCourses);
-    int treeSize = 0, outTreeSize = 0, i, j;
-    bool inTree[numCourses];
+    int *level = malloc(sizeof(int) * numCourses);
+    int *res = malloc(sizeof(int) * numCourses);
+    int size = 0, i, j, rowNum = prerequisitesRowSize;
     for (i = 0 ; i < numCourses ; i++) {
-        inTree[i] = false;
+        level[i] = -1;
     }
     
-    for (i = 0 ; i < numCourses ; i++) {
-        for (j = 0 ; j < prerequisitesRowSize ; j++) {
-            if (prerequisites[j][0] == i) {
-                break;
-            }
-        }
-        if (j == prerequisitesRowSize) {
-            inTree[i] = true;
-            tree[treeSize++] = i;
-        } else {
-            outTree[outTreeSize++] = i;
-        }
-    }
-    int preTreeSize = 0;
-    while (treeSize != numCourses && preTreeSize != treeSize) {
-        preTreeSize = treeSize;
-        for (i = 0 ; i < outTreeSize ; i++) {
-            int cur = outTree[i];
-            for (j = 0 ; j < prerequisitesRowSize ; j++) {
-                if (prerequisites[j][0] == cur) {
-                    int pre = prerequisites[j][1];
-                    if (!inTree[pre]) {
-                        break;
-                    }
+    int curLevel = 0, preSize = -1;
+    while (size < numCourses && preSize != size) {
+        preSize = size;
+        for (i = 0 ; i < numCourses ; i++) {
+            if (level[i] >= 0) continue;
+            for (j = 0 ; j < rowNum ; j++) {
+                int c0 = prerequisites[j][0];
+                int c1 = prerequisites[j][1];
+                if (c0 == i && (level[c1] == -1 || level[c1] == curLevel)) {
+                    break;
                 }
             }
-            if (j == prerequisitesRowSize) {
-                inTree[cur] = true;
-                tree[treeSize++] = cur;
-                outTree[i] = outTree[--outTreeSize];
-                i--;
+            if (j == rowNum) {
+                level[i] = curLevel;
+                res[size++] = i;
             }
         }
+        curLevel++;
     }
-    if (treeSize == numCourses) {
+    if (size == numCourses) {
         (* returnSize) = numCourses;
     } else {
         (* returnSize) = 0;
     }
-    return tree;
+    return res;
 }
