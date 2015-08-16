@@ -2,7 +2,7 @@
  * Return an array of size *returnSize.
  * Note: The returned array must be malloced, assume caller calls free().
  */
-/* !!! I think the code is right, but leetcode throws a compile error even I just declear(malloc) the result and return it */
+/* !!! I think the code is right, but leetcode throws a compile error even I just declear(malloc) the result and return it !!! */
 int* findOrder(int numCourses, int** prerequisites, int prerequisitesRowSize, int prerequisitesColSize, int* returnSize) {
     int *level = malloc(sizeof(int) * numCourses);
     int *res = malloc(sizeof(int) * numCourses);
