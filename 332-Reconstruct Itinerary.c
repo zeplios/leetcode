@@ -3,28 +3,28 @@
  * Note: The returned array must be malloced, assume caller calls free().
  */
 int hashcode(char *s) {
-	// All airports are represented by three capital letters
-	return ((s[0] - 'A') << 10) | ((s[1] - 'A') << 5) | (s[2] - 'A'); 
+    // All airports are represented by three capital letters
+    return ((s[0] - 'A') << 10) | ((s[1] - 'A') << 5) | (s[2] - 'A'); 
 }
 
 char* rebuild(int code) {
-	char *s = malloc(4);
-	s[0] = ((code >> 10) & 0x1F) + 'A';
-	s[1] = ((code >> 5) & 0x1F) + 'A';
-	s[2] = (code & 0x1F) + 'A';
-	s[3] = '\0';
-	return s; 
+    char *s = malloc(4);
+    s[0] = ((code >> 10) & 0x1F) + 'A';
+    s[1] = ((code >> 5) & 0x1F) + 'A';
+    s[2] = (code & 0x1F) + 'A';
+    s[3] = '\0';
+    return s; 
 }
 
 void swap(int nums[][2], int i, int j) {
-	if (i == j) {
-		return;
-	}
-	int n0 = nums[i][0], n1 = nums[i][1];
-	nums[i][0] = nums[j][0];
-	nums[i][1] = nums[j][1];
-	nums[j][0] = n0;
-	nums[j][1] = n1;
+    if (i == j) {
+        return;
+    }
+    int n0 = nums[i][0], n1 = nums[i][1];
+    nums[i][0] = nums[j][0];
+    nums[i][1] = nums[j][1];
+    nums[j][0] = n0;
+    nums[j][1] = n1;
 }
 
 void quicksort(int nums[][2], int start, int end) {
@@ -49,22 +49,22 @@ void quicksort(int nums[][2], int start, int end) {
 // @startCode - the hashcode of the current city
 // @result - store the result
 bool resolve(int tickets[][2], bool *ticketsUsed, int ticketsCount, int usedCount, int startCode, int *result) {
-	if (usedCount == ticketsCount) {
-		return true;
-	}
+    if (usedCount == ticketsCount) {
+        return true;
+    }
     int i;
     for (i = 0 ; i < ticketsCount ; i++) {
-    	if (!ticketsUsed[i] && tickets[i][0] == startCode) {
-    		ticketsUsed[i] = true;
-    		result[usedCount+1] = tickets[i][1];
-    		int size = resolve(tickets, ticketsUsed, ticketsCount, usedCount+1, tickets[i][1], result);
-    		if (size > 0) {
-    			return true;
-			}
-    		ticketsUsed[i] = false;
-		}
-	}
-	return false;
+        if (!ticketsUsed[i] && tickets[i][0] == startCode) {
+            ticketsUsed[i] = true;
+            result[usedCount+1] = tickets[i][1];
+            int size = resolve(tickets, ticketsUsed, ticketsCount, usedCount+1, tickets[i][1], result);
+            if (size > 0) {
+                return true;
+            }
+            ticketsUsed[i] = false;
+        }
+    }
+    return false;
 }
 
 char** findItinerary(char*** tickets, int ticketsRowSize, int ticketsColSize, int* returnSize) {
@@ -79,20 +79,20 @@ char** findItinerary(char*** tickets, int ticketsRowSize, int ticketsColSize, in
     
     // handle string is so complex in c, so convert to int by hash.
     for (i = 0 ; i < ticketsRowSize ; i++) {
-    	ticketsCode[i][0] = hashcode(tickets[i][0]);
-    	ticketsCode[i][1] = hashcode(tickets[i][1]);
-    	ticketsUsed[i] = false;
-	}
-	// sort by lexical order
-	quicksort(ticketsCode, 0, ticketsRowSize-1);
-	resultCode[0] = hashcode("JFK");
-	resolve(ticketsCode, ticketsUsed, ticketsRowSize, 0, hashcode("JFK"), resultCode);
+        ticketsCode[i][0] = hashcode(tickets[i][0]);
+        ticketsCode[i][1] = hashcode(tickets[i][1]);
+        ticketsUsed[i] = false;
+    }
+    // sort by lexical order
+    quicksort(ticketsCode, 0, ticketsRowSize-1);
+    resultCode[0] = hashcode("JFK");
+    resolve(ticketsCode, ticketsUsed, ticketsRowSize, 0, hashcode("JFK"), resultCode);
 	
-	// rebuild from hashcode to string
-	for (i = 0 ; i < ticketsRowSize+1 ; i++) {
-		res[i] = rebuild(resultCode[i]);
-	}
-	// resultSize must be ticketsRowSize+1
-	(* returnSize) = i;
-	return res;
+    // rebuild from hashcode to string
+    for (i = 0 ; i < ticketsRowSize+1 ; i++) {
+        res[i] = rebuild(resultCode[i]);
+    }
+    // resultSize must be ticketsRowSize+1
+    (* returnSize) = i;
+    return res;
 }
