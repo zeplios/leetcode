@@ -11,29 +11,25 @@
  * Note: The returned array must be malloced, assume caller calls free().
  */
 int* preorderTraversal(struct TreeNode* root, int* returnSize) {
-    struct TreeNode** stack = malloc(100 * sizeof(struct TreeNode*));
     int * res = malloc(1000 * sizeof(int));
-    int stackTop = 0;
-    (*returnSize) = 0;
+    struct TreeNode** stack = malloc(100 * sizeof(struct TreeNode*));
+    int top = 0, count = 0;
     struct TreeNode* cur = root;
-    while (cur != NULL) {
-        res[(*returnSize)++] = cur->val;
-        stack[stackTop++] = cur;
-        if (cur->left != NULL) {
+    
+    while (top > 0 || cur != NULL) {
+        while (cur != NULL) {
+            res[count++] = cur->val;
+            stack[top++] = cur;
             cur = cur->left;
+        }
+        
+        cur = stack[--top];
+        if (cur->right != NULL) {
+            cur = cur->right;
         } else {
-            while (true) {
-                if (stackTop == 0) {
-            		cur = NULL;
-            		break;
-				}
-                cur = stack[--stackTop];
-                if (cur->right != NULL) {
-                    cur = cur->right;
-                    break;
-                }
-            }
+            cur = NULL;
         }
     }
+    (*returnSize) = count;
     return res;
 }
