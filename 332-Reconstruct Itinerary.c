@@ -46,18 +46,17 @@ void quicksort(int nums[][2], int start, int end) {
 // @ticketsUsed - whether a ticket is used
 // @ticketsCount - total tickets
 // @usedCount - how many tickets are used, usedCount==ticketsCount means all tickets are used
-// @startCode - the hashcode of the current city
 // @result - store the result
-bool resolve(int tickets[][2], bool *ticketsUsed, int ticketsCount, int usedCount, int startCode, int *result) {
+bool resolve(int tickets[][2], bool *ticketsUsed, int ticketsCount, int usedCount, int *result) {
     if (usedCount == ticketsCount) {
         return true;
     }
     int i;
     for (i = 0 ; i < ticketsCount ; i++) {
-        if (!ticketsUsed[i] && tickets[i][0] == startCode) {
+        if (!ticketsUsed[i] && tickets[i][0] == result[usedCount]) {
             ticketsUsed[i] = true;
             result[usedCount+1] = tickets[i][1];
-            int size = resolve(tickets, ticketsUsed, ticketsCount, usedCount+1, tickets[i][1], result);
+            int size = resolve(tickets, ticketsUsed, ticketsCount, usedCount+1, result);
             if (size > 0) {
                 return true;
             }
@@ -86,7 +85,7 @@ char** findItinerary(char*** tickets, int ticketsRowSize, int ticketsColSize, in
     // sort by lexical order
     quicksort(ticketsCode, 0, ticketsRowSize-1);
     resultCode[0] = hashcode("JFK");
-    resolve(ticketsCode, ticketsUsed, ticketsRowSize, 0, hashcode("JFK"), resultCode);
+    resolve(ticketsCode, ticketsUsed, ticketsRowSize, 0, resultCode);
 	
     // rebuild from hashcode to string
     for (i = 0 ; i < ticketsRowSize+1 ; i++) {
