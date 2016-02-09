@@ -19,13 +19,15 @@ void quickSort(int* nums, int start, int end) {
 // how many coins will used to get amount with coins[0]~coins[coinsidx]
 int dp(int* coins, int coinsidx, int amount, int limit) {
     if (coinsidx < 0) return -1;
-    if (amount / coins[coinsidx] >= limit) return -1;
-    int num = amount / coins[coinsidx], i, cnt, remain, min = INT_MAX;
+	if (amount % coins[coinsidx] == 0) return amount / coins[coinsidx];
+    int num = amount / coins[coinsidx], i, min = INT_MAX;
     for (i = num ; i >= 0 ; i--) {
-        remain = amount - i * coins[coinsidx];
-        if (remain == 0) return i;
-        cnt = dp(coins, coinsidx-1, remain, limit-i);
-        if (cnt > -1 && cnt+i < min) {
+        int remain = amount - i * coins[coinsidx];
+        if (coinsidx > 0 && remain/coins[coinsidx-1] + i >= limit) {
+            break;
+        }
+        int cnt = dp(coins, coinsidx-1, remain, limit-i);
+        if (cnt > -1 && cnt + i < min) {
             min = cnt + i;
             limit = min;
         }
