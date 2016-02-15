@@ -1,12 +1,11 @@
 int maxProfit(int* prices, int pricesSize) {
-    if (pricesSize == 0 || pricesSize == 1) {
-		return 0;
-	}
-	// max profit before or equal the i th day
-	int before[pricesSize];
-	// max profit after or equal the i th day
-	int after[pricesSize];
-    int lastmax = 0, newmax = 0, i;
+    if (pricesSize <= 0) return 0;
+
+    // max profit if sell in i-th day
+    int before[pricesSize];
+    // max profit if buy in i-th day
+    int after[pricesSize];
+    int lastmax = 0, newmax = 0, i, max = 0;
     before[0] = 0;
     after[pricesSize - 1] = 0;
     for (i = 1 ; i < pricesSize ; i++) {
@@ -22,7 +21,7 @@ int maxProfit(int* prices, int pricesSize) {
         newmax = newmax > 0 ? newmax : 0;
         after[i-1] = lastmax;
     }
-    int max = 0;
+
     for (i = 0 ; i < pricesSize ; i++) {
         int sum = before[i] + after[i];
         max = sum > max ? sum : max;
